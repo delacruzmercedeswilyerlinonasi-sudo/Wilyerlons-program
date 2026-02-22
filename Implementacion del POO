@@ -1,0 +1,131 @@
+using System;
+using System.Collections.Generic;
+using Spectre.Console;
+
+namespace AmortizacionPOO
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Program app = new Program();
+            app.Ejecutar();
+        }
+
+        // Método principal que organiza el flujo del programa
+        public void Ejecutar()
+        {
+            AnsiConsole.MarkupLine("[bold cyan]=== CALCULADORA DE AMORTIZACIÓN ===[/]");
+
+            (double monto, double tasaAnual, int plazo) = CapturarDatos();
+
+            List<Cuota> tablaAmortizacion = CalcularAmortizacion(monto, tasaAnual, plazo);
+
+            MostrarTabla(tablaAmortizacion);
+        }
+
+        // ==============================
+        // MÉTODO PARA CAPTURAR DATOS
+        // ==============================
+        private (double, double, int) CapturarDatos()
+        {
+            double monto = AnsiConsole.Ask<double>("Ingrese el [green]monto del préstamo[/]:");
+            double tasaAnual = AnsiConsole.Ask<double>("Ingrese la [green]tasa de interés anual (%)[]:");
+            int plazo = AnsiConsole.Ask<int>("Ingrese el [green]plazo en meses[/]:");
+
+            return (monto, tasaAnual, plazo);
+        }
+
+        // ==============================
+        // MÉTODO PARA CALCULAR AMORTIZACIÓN
+        // ==============================
+        private List<Cuota> CalcularAmortizacion(double monto, double tasaAnual, int plazo)
+        {
+            List<Cuota> cuotas = new List<Cuota>();
+
+            double tasaMensual = tasaAnual / 100 / 12;
+            double cuotaMensual = monto * tasaMensual / (1 - Math.Pow(1 + tasaMensual, -plazo));
+            double saldo = monto;
+
+            for (int i = 1; i <= plazo; i++)
+            {
+                double interes = saldo * tasaMensual;
+                double amortizacion = cuotaMensual - interes;
+                saldo -= amortizacion;
+
+                if (saldo < 0)
+                    saldo = 0;
+
+                cuotas.Add(new Cuota
+                {
+                    Numero = i,
+                    Pago = cuotaMensual,
+                    Interes = interes,
+                    Amortizacion = amortizacion,
+                    Saldo = saldo
+                });
+            }
+
+            return cuotas;
+        }
+
+        // ==============================
+        // MÉTODO PARA MOSTRAR TABLA
+        // ==============================
+        private void MostrarTabla(List<Cuota> cuotas)
+        {
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            table.AddColumn("[yellow]N°[/]");
+            table.AddColumn("[yellow]Pago[/]");
+            table.AddColumn("[yellow]Interés[/]");
+            table.AddColumn("[yellow]Amortización[/]");
+            table.AddColumn("[yellow]Saldo Restante[/]");
+
+            foreach (var cuota in cuotas)
+            {
+                table.AddRow(
+                    cuota.Numero.ToString(),
+                    cuota.Pago.ToString("C2"),
+                    cuota.Interes.ToString("C2"),
+                    cuota.Amortizacion.ToString("C2"),
+                    cuota.Saldo.ToString("C2")
+                );
+            }
+
+            AnsiConsole.Write(table);
+            MostrarResumen(cuotas);
+        }
+
+        // ==============================
+        // MÉTODO PARA MOSTRAR RESUMEN
+        // ==============================
+        private void MostrarResumen(List<Cuota> cuotas)
+        {
+            double totalPagado = 0;
+            double totalInteres = 0;
+
+            foreach (var cuota in cuotas)
+            {
+                totalPagado += cuota.Pago;
+                totalInteres += cuota.Interes;
+            }
+
+            AnsiConsole.MarkupLine("\n[bold green]=== RESUMEN ===[/]");
+            AnsiConsole.MarkupLine($"Total pagado: [cyan]{totalPagado:C2}[/]");
+            AnsiConsole.MarkupLine($"Total interés pagado: [red]{totalInteres:C2}[/]");
+        }
+    }
+
+    // ==============================
+    // CLASE MODELO (Responsabilidad de datos)
+    // ==============================
+    class Cuota
+    {
+        public int Numero { get; set; }
+        public double Pago { get; set; }
+        public double Interes { get; set; }
+        public double Amortizacion { get; set; }
+        public double Saldo { get; set; }
+    }
+}
