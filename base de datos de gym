@@ -1,0 +1,121 @@
+-- Habilitar el uso de claves foráneas
+PRAGMA foreign_keys = ON;
+
+-- Crear tablas
+CREATE TABLE IF NOT EXISTS miembro (
+    id_miembro INTEGER PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    telefono TEXT NOT NULL,
+    cedula TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Inscripcion (
+    id_inscripcion INTEGER PRIMARY KEY,
+    cedula INTEGER NOT NULL,
+    id_clase TEXT NOT NULL,
+    FOREIGN KEY (cedula) REFERENCES inscripcion (cedula)
+    FOREIGN KEY (id_clase) REFERENCES inscripcion (id_clase)
+);
+
+CREATE Table IF NOT EXISTS clase (
+    id_clase INTEGER PRIMARY KEY,
+    NombreClase INTEGER NOT NULL,
+    DiaSemana TEXT NOT NULL,
+    Horario INTEGER NOT NULL
+    FOREIGN KEY (id_clase) REFERENCES clase (id_clase),
+  
+);
+
+-- Insertar datos
+INSERT INTO
+    miembro (cedula, telefono, nombre)
+VALUES (
+        '402-4541627-2 ',
+        '809-556-2345',
+        ' Matheus'
+    ),
+    (
+        '402-555534-2',
+        '809-666-6629',
+        'Muhamed'
+    ),
+    (
+        '025-0002833-5',
+        '829-556-2345',
+        'Yulissa'
+    ),
+    (
+        '025-666623-6',
+        '809-777-2323',
+        'Carlotaaaa',
+    )
+    (
+        '402-55555-2',
+        '849-2453-2835',
+        'Alexa ese cueee',
+        );
+
+    
+INSERT INTO
+    Inscripcion (id_inscripcion, cedula, id_clase)
+VALUES (
+        '14-9-2024',
+        '402-4541627-2',
+        '0401'
+    ),
+    (
+        '23-9-2024',
+        '402-555534-2',
+        '0635'
+    ),
+    (
+        '25-1-2022',
+        '025-0002833-5',
+        '0123'
+    ),
+    (
+        '23-4-2021',
+        '025-666623-6',
+        '0566'
+    ),
+    (
+        '23-9-2025',
+        '402-55555-2',
+        '0577'
+    ),-
+    INSERT INTO
+    clase (id_clase, NombreClase, DiaSemana, Horario)
+    VALUES (
+        'C-0401',
+        'clase de pilometria',
+        'Lunes',
+        '7:15 - 17:00',
+
+    )
+    (
+        'A-0635',
+        'clase de fisica',
+        'Martes',
+        '1:15 - 5:00'
+
+    )
+    (
+        'F-0123',
+        'Zumba',
+        'Miercoles',
+        '8:15 - 17:00'
+
+    )
+    (
+        'H-0566',
+        'clase de danza',
+        'Jueves',
+        '7:30 - 5:00'
+
+    )
+    (
+        'C-0577',
+        'terapia de relajacion',
+        '10:15 - 14:00'
+
+    );
